@@ -21,7 +21,8 @@
         <activity android:name=".LoginActivity"/>
         <activity android:name=".SignUpActivity"/>
         <activity android:name=".PasswordResetActivity"/>
-        <activity android:name=".MemberinitAcrtivity"/>
+        <activity android:name=".MemberInitActivity"/>
+<!--        <activity android:name=".MainActivity"/>-->
     </application>
 
 </manifest>
