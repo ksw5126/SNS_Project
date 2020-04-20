@@ -17,9 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private static final String TAG = "SignActivity";
     private FirebaseAuth mAuth; // 인스턴스
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
 //                    Log.e("클릭", "클릭");
                     break;
                 case R.id.gotoLoginButton :
-                    startLoginActivity();
+                    MyStartActivity(LoginActivity.class);
             }
         }
     };
@@ -69,6 +67,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     StartToast("회원가입을 성공 했습니다.");
+                                    MyStartActivity(MainActivity.class);
                                 } else {
                                     if(task.getException() != null) {
                                         StartToast(task.getException().toString());
@@ -91,9 +90,11 @@ public class SignUpActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void startLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
+    private void MyStartActivity(Class c) {
+        Intent intent = new Intent(this, c);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
 
 }

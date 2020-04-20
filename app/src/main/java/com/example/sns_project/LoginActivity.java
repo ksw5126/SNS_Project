@@ -17,9 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String TAG = "SignActivity";
     private FirebaseAuth mAuth; // 인스턴스
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,29 +26,26 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance(); // 인스턴스 초기화
 
-        findViewById(R.id.loginButton).setOnClickListener(onClickListener);
+        findViewById(R.id.checkButton).setOnClickListener(onClickListener);
+        findViewById(R.id.gotoPasswordResetButton).setOnClickListener(onClickListener);
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.loginButton:
-                    signUp();
-//                    Log.e("클릭", "클릭");
+                case R.id.checkButton:
+                    login();
+                    break;
+                case R.id.gotoPasswordResetButton:
+                    MyStartActivity(PasswordResetActivity.class);
                     break;
             }
         }
     };
 
-    private void signUp() {
+    private void login() {
 
         String email = ((EditText)findViewById(R.id.emailEditText)).getText().toString();
         String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString();
@@ -64,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 StartToast("로그인에 성공 했습니다.");
-                                startMainActivity();
+                                finish();
                             } else {
                                 if(task.getException() != null) {
                                     StartToast(task.getException().toString());
@@ -87,10 +82,9 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void startMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void MyStartActivity(Class c) {
+        Intent intent = new Intent(this, c);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
 }
