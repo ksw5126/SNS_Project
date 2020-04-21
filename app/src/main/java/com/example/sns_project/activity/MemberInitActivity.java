@@ -105,12 +105,13 @@ public class MemberInitActivity extends AppCompatActivity {
                     if (ContextCompat.checkSelfPermission(MemberInitActivity.this,
                             Manifest.permission.READ_EXTERNAL_STORAGE)
                             != PackageManager.PERMISSION_GRANTED) {
-
+                        ActivityCompat.requestPermissions(MemberInitActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                         if (ActivityCompat.shouldShowRequestPermissionRationale(MemberInitActivity.this,
                                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//                            ActivityCompat.requestPermissions(MemberInitActivity.this,
+//                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                         } else {
-                            ActivityCompat.requestPermissions(MemberInitActivity.this,
-                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                             StartToast("권한을 허용해 주세요.");
                         }
                     } else {
@@ -158,7 +159,6 @@ public class MemberInitActivity extends AppCompatActivity {
             } else {
                 try {
                     InputStream stream = new FileInputStream(new File(profilePath));
-
                     UploadTask uploadTask = mountainImagesRef.putStream(stream);
                     uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                         @Override

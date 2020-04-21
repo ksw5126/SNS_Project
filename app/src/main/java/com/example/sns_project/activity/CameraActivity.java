@@ -75,6 +75,7 @@ public class CameraActivity extends AppCompatActivity {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("profilePath", mFile.toString());
             setResult(Activity.RESULT_OK, resultIntent);
+
             camera2BasicFragment.closeCamera();
             finish();
         }
