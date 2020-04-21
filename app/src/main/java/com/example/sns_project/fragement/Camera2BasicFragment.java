@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.sns_project;
+package com.example.sns_project.fragement;
 
 import android.Manifest;
 import android.app.Activity;
@@ -41,7 +41,6 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -61,17 +60,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.example.sns_project.R;
+import com.example.sns_project.view.AutoFitTextureView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -404,15 +394,15 @@ public class Camera2BasicFragment extends Fragment
 
     /**
      * Given {@code choices} of {@code Size}s supported by a camera, choose the smallest one that
-     * is at least as large as the respective texture view size, and that is at most as large as the
+     * is at least as large as the respective texture com.example.sns_project.view size, and that is at most as large as the
      * respective max size, and whose aspect ratio matches with the specified value. If such size
      * doesn't exist, choose the largest one that is at most as large as the respective max size,
      * and whose aspect ratio matches with the specified value.
      *
      * @param choices           The list of sizes that the camera supports for the intended output
      *                          class
-     * @param textureViewWidth  The width of the texture view relative to sensor coordinate
-     * @param textureViewHeight The height of the texture view relative to sensor coordinate
+     * @param textureViewWidth  The width of the texture com.example.sns_project.view relative to sensor coordinate
+     * @param textureViewHeight The height of the texture com.example.sns_project.view relative to sensor coordinate
      * @param maxWidth          The maximum width that can be chosen
      * @param maxHeight         The maximum height that can be chosen
      * @param aspectRatio       The aspect ratio
@@ -525,7 +515,7 @@ public class Camera2BasicFragment extends Fragment
      * @param height The height of available size for camera preview
      */
     @SuppressWarnings("SuspiciousNameCombination")
-    private void setUpCameraOutputs(int width, int height, int facingId) {
+    private void setUpCameraOutputs(int width, int height) {
         Activity activity = getActivity();
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -648,7 +638,7 @@ public class Camera2BasicFragment extends Fragment
             requestCameraPermission();
             return;
         }
-        setUpCameraOutputs(width, height, facingId); // CameraCharacteristics.LENS_FACING_FRONT
+        setUpCameraOutputs(width, height); // CameraCharacteristics.LENS_FACING_FRONT
         configureTransform(width, height);
         Activity activity = getActivity();
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
