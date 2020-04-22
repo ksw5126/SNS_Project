@@ -4,8 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -56,8 +53,8 @@ public class MemberInitActivity extends BasicActivity {
         profileImageView.setOnClickListener(onClickListener);
 
         findViewById(R.id.checkButton).setOnClickListener(onClickListener);
-        findViewById(R.id.picture).setOnClickListener(onClickListener);
-        findViewById(R.id.gallery).setOnClickListener(onClickListener);
+        findViewById(R.id.videoModify).setOnClickListener(onClickListener);
+        findViewById(R.id.delete).setOnClickListener(onClickListener);
 
     }
 
@@ -97,10 +94,10 @@ public class MemberInitActivity extends BasicActivity {
                         cardView.setVisibility(View.VISIBLE);
                     }
                     break;
-                case R.id.picture :
+                case R.id.videoModify:
                     MyStartActivity(CameraActivity.class);
                     break;
-                case R.id.gallery:
+                case R.id.delete:
                     // 권한 설정
                     if (ContextCompat.checkSelfPermission(MemberInitActivity.this,
                             Manifest.permission.READ_EXTERNAL_STORAGE)
