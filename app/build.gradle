@@ -42,4 +42,5 @@ dependencies {
         exclude group: "com.android.support"
     }
     implementation "com.android.support:support-fragment:29.1.0"
+    implementation 'com.google.android.material:material:1.1.0'
 }
