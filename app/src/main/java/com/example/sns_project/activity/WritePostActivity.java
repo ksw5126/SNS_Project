@@ -211,8 +211,11 @@ public class WritePostActivity extends BasicActivity {
                     } else {
                         contentsList.add(pathList.get(pathCount));
 
+                        // 파일 확장자에 따른 설정 (.png, .mp4 ...)
+                        String[] pahtArray = pathList.get(pathCount).split("\\.");
+
                         final StorageReference mountainImagesRef = storageRef.child
-                                ("posts/" + user.getUid() + "/" + documentReference.getId() + ".jpg");
+                                ("posts/" + documentReference.getId() + "/" + pathCount + "." + pahtArray[pahtArray.length-1]);
 
                         try {
                             InputStream stream = new FileInputStream(new File(pathList.get(pathCount)));

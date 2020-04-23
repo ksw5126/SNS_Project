@@ -100,41 +100,12 @@ public class MemberInitActivity extends BasicActivity {
                 case R.id.videoModify:
                     MyStartActivity(CameraActivity.class);
                     break;
-                case R.id.delete:
-                    // 권한 설정
-                    if (ContextCompat.checkSelfPermission(MemberInitActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(MemberInitActivity.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(MemberInitActivity.this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-//                            ActivityCompat.requestPermissions(MemberInitActivity.this,
-//                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                        } else {
-                            StartToast("권한을 허용해 주세요.");
-                        }
-                    } else {
-                        MyStartActivity(GalleryActivity.class);
-                    }
+                case R.id.gallery:
+                    MyStartActivity(GalleryActivity.class);
                     break;
             }
         }
     };
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    MyStartActivity(GalleryActivity.class);
-                } else {
-                    StartToast("권한을 허용해 주세요.");
-                }
-                }
-            }
-
-    }
 
     private void storageUploader() {
 
