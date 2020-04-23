@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,12 +44,14 @@ public class MemberInitActivity extends BasicActivity {
     private ImageView profileImageView;
     private String profilePath;
     private FirebaseUser user;
+    private RelativeLayout loaderlayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_member_init);
 
+        loaderlayout = findViewById(R.id.loaderLayout);
         profileImageView = findViewById(R.id.profileimageView);
         profileImageView.setOnClickListener(onClickListener);
 
@@ -84,7 +87,7 @@ public class MemberInitActivity extends BasicActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.checkButton:
-                    profileUpdate();
+                    storageUploader();
                     break;
                 case R.id.profileimageView :
                     CardView cardView = findViewById(R.id.buttonsCardView);
@@ -133,9 +136,7 @@ public class MemberInitActivity extends BasicActivity {
 
     }
 
-
-
-    private void profileUpdate() {
+    private void storageUploader() {
 
         final String name = ((EditText) findViewById(R.id.nameEdittext)).getText().toString();
         final String phoneNumber = ((EditText) findViewById(R.id.PhoneEditText)).getText().toString();
@@ -143,6 +144,8 @@ public class MemberInitActivity extends BasicActivity {
         final String address = ((EditText) findViewById(R.id.AddressEditText)).getText().toString();
 
         if (name.length() > 0 && phoneNumber.length() > 9 && birthDay.length() > 5 && address.length() > 0) {
+
+            loaderlayout.setVisibility(View.VISIBLE);
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
@@ -152,7 +155,7 @@ public class MemberInitActivity extends BasicActivity {
 
             if(profilePath == null) {
                 MemberInfo memberInfo = new MemberInfo(name, phoneNumber, birthDay, address);
-                uploader(memberInfo);
+                storeUploader(memberInfo);
             } else {
                 try {
                     InputStream stream = new FileInputStream(new File(profilePath));
@@ -171,7 +174,7 @@ public class MemberInitActivity extends BasicActivity {
                             if (task.isSuccessful()) {
                                 Uri downloadUri = task.getResult();
                                 MemberInfo memberInfo = new MemberInfo(name, phoneNumber, birthDay, address, downloadUri.toString());
-                                uploader(memberInfo);
+                                storeUploader(memberInfo);
                             } else {
                                 StartToast("회원정보를 보내는데 실패했습니다.");
                             }
@@ -187,13 +190,14 @@ public class MemberInitActivity extends BasicActivity {
         }
     }
 
-    private void uploader(MemberInfo memberInfo) {
+    private void storeUploader(MemberInfo memberInfo) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("users").document(user.getUid()).set(memberInfo)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             StartToast("회원정보 등록을 성공하였습니다.");
+                            loaderlayout.setVisibility(View.GONE);
                             finish();
                         }
                     })
@@ -201,6 +205,7 @@ public class MemberInitActivity extends BasicActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             StartToast("회원정보 등록을 실패하였습니다.");
+                            loaderlayout.setVisibility(View.GONE);
                         }
                     });
         }

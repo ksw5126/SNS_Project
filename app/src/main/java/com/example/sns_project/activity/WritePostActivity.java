@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.example.sns_project.R;
-import com.example.sns_project.WriteInfo;
+import com.example.sns_project.PostInfo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +46,7 @@ public class WritePostActivity extends BasicActivity {
     private int pathCount;
     private int successCount;
     private RelativeLayout buttonsBackgroundLayout;
+    private RelativeLayout loaderlayout;
     private ImageView selectedImageView;
     private EditText selectedEditText;
 
@@ -55,6 +56,7 @@ public class WritePostActivity extends BasicActivity {
         setContentView(R.layout.activity_write_post);
         parent = findViewById(R.id.contentsLayout);
         buttonsBackgroundLayout = (RelativeLayout)findViewById(R.id.buttonsBackgroundLayout);
+        loaderlayout = findViewById(R.id.loaderLayout);
 
         buttonsBackgroundLayout.setOnClickListener(onClickListener);
         findViewById(R.id.check).setOnClickListener(onClickListener);
@@ -186,6 +188,10 @@ public class WritePostActivity extends BasicActivity {
         final String title = ((EditText) findViewById(R.id.titleEditText)).getText().toString();
 
         if (title.length() > 0) {
+
+            final RelativeLayout loaderLayout = findViewById(R.id.loaderLayout);
+            loaderLayout.setVisibility(View.VISIBLE);
+
             final ArrayList<String> contentsList = new ArrayList<>();
             user = FirebaseAuth.getInstance().getCurrentUser();
             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -233,8 +239,8 @@ public class WritePostActivity extends BasicActivity {
                                             successCount++;
                                             if (pathList.size() == successCount) {
                                                 //완료
-                                                WriteInfo writeInfo = new WriteInfo(title, contentsList, user.getUid(), new Date());
-                                                storeUpload(documentReference, writeInfo);
+                                                PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), new Date());
+                                                storeUpload(documentReference, postInfo);
                                                 for (int a = 0; a < contentsList.size(); a++) {
                                                     Log.e("로그", "콘텐ㅊ :, " + contentsList.get(a));
                                                 }
@@ -251,6 +257,12 @@ public class WritePostActivity extends BasicActivity {
 
                 }
             }
+
+            if(pathList.size() == 0 ) {
+                PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), new Date());
+                storeUpload(documentReference, postInfo);
+            }
+
             }  else{
                     StartToast("제목!");
         }
@@ -258,12 +270,13 @@ public class WritePostActivity extends BasicActivity {
     }
 
 
-    private void storeUpload(DocumentReference documentReference ,WriteInfo writeInfo) {
-        documentReference.set(writeInfo)
+    private void storeUpload(DocumentReference documentReference , PostInfo postInfo) {
+        documentReference.set(postInfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
+                        loaderlayout.setVisibility(View.GONE);
                         finish();
                     }
                 })
@@ -271,6 +284,7 @@ public class WritePostActivity extends BasicActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error writing document", e);
+                        loaderlayout.setVisibility(View.GONE);
                     }
                 });
     }

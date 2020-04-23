@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,10 +47,16 @@ public class PasswordResetActivity extends BasicActivity {
         String email = ((EditText)findViewById(R.id.emailEditText)).getText().toString();
 
         if(email.length() > 0 ) {
+
+            final RelativeLayout loaderLayout = findViewById(R.id.loaderLayout);
+            loaderLayout.setVisibility(View.VISIBLE);
+
             mAuth.sendPasswordResetEmail(email)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
+
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+                            loaderLayout.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
                                 StartToast("이메일을 보냈습니다.");
 //                                Log.d(TAG, "Email sent.");
