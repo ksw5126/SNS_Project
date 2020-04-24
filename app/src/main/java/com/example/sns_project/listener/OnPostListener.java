@@ -2,7 +2,7 @@ package com.example.sns_project.listener;
 
 public interface OnPostListener {
 
-    void onModify(String id);
-    void onDelete(String id);
+    void onModify(int position);
+    void onDelete(int position);
 
 }

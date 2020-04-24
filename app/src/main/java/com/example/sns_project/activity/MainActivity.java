@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 
 import com.example.sns_project.PostInfo;
@@ -27,6 +28,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,11 +43,15 @@ public class MainActivity extends BasicActivity {
     private MainAdapter mainAdapter;
     private ArrayList<PostInfo> postList;
     private Util util;
+    private StorageReference storageRef;
+    private int successCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -95,29 +102,42 @@ public class MainActivity extends BasicActivity {
 
     OnPostListener onPostListener = new OnPostListener() {
         @Override
-        public void onDelete(String id) {
-            Log.e("로그", "삭제" + id);
+        public void onDelete(int position) {
+            final String id = postList.get(position).getId();
+            ArrayList<String> contentsList = postList.get(position).getContents();
+            // 실행시 이미지 3개이상 올려도 보이는건 2개로 제한.
+            for(int i = 0 ; i< contentsList.size(); i++) {
+                String contents = contentsList.get(i);
+                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/sns-project-4dab8.appspot.com/o/post")) {
+                    successCount++;
+                    String[] list = contents.split("\\?");
+                    String[] list2 = list[0].split("%2F");
+                    String name = list2[list2.length -1];
 
-            firebaseFirestore.collection("posts").document(id)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    // Create a reference to the file to delete
+                    StorageReference desertRef = storageRef.child("posts/" + id + "/" + name);
+
+                    // Delete the file
+                    desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            util.showToast("게시글 삭제 완료!");
-                            PostUpdate();
+                            successCount--;
+                            storeUploader(id);
                         }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
+                    }).addOnFailureListener(new OnFailureListener() {
                         @Override
-                        public void onFailure(@NonNull Exception e) {
-                            util.showToast("게시글 삭제 실패!");
+                        public void onFailure(@NonNull Exception exception) {
+                            util.showToast("문제가 발생했습니다!");
                         }
                     });
+                }
+            }
+            storeUploader(id);
         }
 
         @Override
-        public void onModify(String id) {
-            MyStartActivity(WritePostActivity.class, id);
+        public void onModify(int position) {
+            MyStartActivity(WritePostActivity.class, postList.get(position));
         }
     };
 
@@ -169,14 +189,34 @@ public class MainActivity extends BasicActivity {
         }
     }
 
+    private void storeUploader(String id) {
+        if (successCount == 0) {
+            firebaseFirestore.collection("posts").document(id)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            util.showToast("게시글 삭제 완료!");
+                            PostUpdate();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            util.showToast("게시글 삭제 실패!");
+                        }
+                    });
+        }
+    }
+
     private void MyStartActivity(Class c) {
         Intent intent = new Intent(this, c);
         startActivity(intent);
     }
 
-    private void MyStartActivity(Class c, String id) {
+    private void MyStartActivity(Class c, PostInfo postInfo) {
         Intent intent = new Intent(this, c);
-        intent.putExtra("id", id);
+        intent.putExtra("postInfo", postInfo);
         startActivity(intent);
     }
 }
