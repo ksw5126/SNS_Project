@@ -2,43 +2,34 @@ package com.example.sns_project.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.example.sns_project.FirebaseHelper;
 import com.example.sns_project.PostInfo;
 import com.example.sns_project.R;
 import com.example.sns_project.activity.PostActivity;
+import com.example.sns_project.activity.WritePostActivity;
 import com.example.sns_project.listener.OnPostListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.text.SimpleDateFormat;
+import com.example.sns_project.view.ReadContentsView;
 import java.util.ArrayList;
-import java.util.Locale;
-
-import static com.example.sns_project.Util.isStorageUrl;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
     private ArrayList<PostInfo> mDataset;
     private Activity activity;
-    private OnPostListener onPostListener;
+    private final int MORE_INDEX = 2;
+    private FirebaseHelper firebaseHelper;
 
     static class MainViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
@@ -53,10 +44,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     public MainAdapter(Activity activity, ArrayList<PostInfo> myDataset) {
         this.activity = activity;
         this.mDataset = myDataset;
+        firebaseHelper = new FirebaseHelper(activity);
     }
 
     public void setOnPostListener(OnPostListener onPostListener) {
-        this.onPostListener = onPostListener;
+        firebaseHelper.setOnPostListener(onPostListener);
     }
 
     @Override
@@ -97,46 +89,21 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
 
         CardView cardView = holder.cardView;
         TextView titleTextView = cardView.findViewById(R.id.titleTextView);
-        titleTextView.setText(mDataset.get(position).getTitle());
 
-        TextView createdTextView = cardView.findViewById(R.id.createAtTextView);
-        createdTextView.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(mDataset.get(position).getCreatedAt()));
+        PostInfo postInfo = mDataset.get(position);
+        titleTextView.setText(postInfo.getTitle());
+
+        ReadContentsView readContentsView = cardView.findViewById(R.id.readContentsView);
 
         LinearLayout contentsLayout = cardView.findViewById(R.id.contentsLayout);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams
-                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        ArrayList<String> contentsList = mDataset.get(position).getContents();
 
-    if(contentsLayout.getTag() == null || !contentsLayout.equals(contentsList)) {
-        contentsLayout.setTag(contentsList);
+    if(contentsLayout.getTag() == null || !contentsLayout.equals(postInfo)) {
+        contentsLayout.setTag(postInfo);
         contentsLayout.removeAllViews();
 
-        final int MORE_INDEX = 2;
-        // 실행시 이미지 3개이상 올려도 보이는건 2개로 제한.
-        for(int i = 0 ; i< contentsList.size(); i++) {
-            if (i == MORE_INDEX) {
-                TextView textView = new TextView(activity);
-                textView.setLayoutParams(layoutParams);
-                textView.setText("더보기...");
-                contentsLayout.addView(textView);
-                break;
-            }
-            String contents = contentsList.get(i);
-            if (isStorageUrl(contents)) {
-                ImageView imageView = new ImageView(activity);
-                imageView.setLayoutParams(layoutParams);
-                imageView.setAdjustViewBounds(true);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                contentsLayout.addView(imageView);
-                Glide.with(activity).load(contents).override(1000).thumbnail(0.1f).into(imageView);
-            } else {
-                TextView textView = new TextView(activity);
-                textView.setLayoutParams(layoutParams);
-                textView.setText(contents);
-                textView.setTextColor(Color.rgb(0,0,0));
-                contentsLayout.addView(textView);
-            }
-        }
+        readContentsView.setMoreIndex(MORE_INDEX);
+        readContentsView.setPostInfo(postInfo);
+
         }
     }
 
@@ -152,10 +119,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.modify :
-                        onPostListener.onModify(position);
+                        MyStartActivity(WritePostActivity.class, mDataset.get(position));
                         return true;
                     case R.id.delete :
-                        onPostListener.onDelete(position);
+                        firebaseHelper.storageDelete(mDataset.get(position));
                         return true;
                 }
                 return false;
@@ -167,6 +134,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         popup.show();
     }
 
-
+    private void MyStartActivity(Class c, PostInfo postInfo) {
+        Intent intent = new Intent(activity, c);
+        intent.putExtra("postInfo", postInfo);
+        activity.startActivity(intent);
+    }
 
 }

@@ -11,12 +11,9 @@ import android.view.View;
 
 import com.example.sns_project.PostInfo;
 import com.example.sns_project.R;
-import com.example.sns_project.Util;
 import com.example.sns_project.adapter.MainAdapter;
 import com.example.sns_project.listener.OnPostListener;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,8 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,16 +40,12 @@ public class MainActivity extends BasicActivity {
     private RecyclerView recyclerView;
     private MainAdapter mainAdapter;
     private ArrayList<PostInfo> postList;
-    private StorageReference storageRef;
-    private int successCount;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+        setToolbarTitle(getResources().getString(R.string.app_name));
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -87,6 +78,7 @@ public class MainActivity extends BasicActivity {
         mainAdapter = new MainAdapter(MainActivity.this, postList);
         mainAdapter.setOnPostListener(onPostListener);
 
+
 //        findViewById(R.id.logoutButton).setOnClickListener(onClickListener);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         findViewById(R.id.floatingAddButton).setOnClickListener(onClickListener);
@@ -102,43 +94,6 @@ public class MainActivity extends BasicActivity {
         PostUpdate();
     }
 
-    OnPostListener onPostListener = new OnPostListener() {
-        @Override
-        public void onDelete(int position) {
-            final String id = postList.get(position).getId();
-            ArrayList<String> contentsList = postList.get(position).getContents();
-            // 실행시 이미지 3개이상 올려도 보이는건 2개로 제한.
-            for(int i = 0 ; i< contentsList.size(); i++) {
-                String contents = contentsList.get(i);
-                if (isStorageUrl(contents)) {
-                    successCount++;
-
-                    // Create a reference to the file to delete
-                    StorageReference desertRef = storageRef.child("posts/" + id + "/" + storageUrlToName(contents));
-
-                    // Delete the file
-                    desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            successCount--;
-                            storeUploader(id);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            showToast(MainActivity.this,"문제가 발생했습니다!");
-                        }
-                    });
-                }
-            }
-            storeUploader(id);
-        }
-
-        @Override
-        public void onModify(int position) {
-            MyStartActivity(WritePostActivity.class, postList.get(position));
-        }
-    };
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -152,6 +107,19 @@ public class MainActivity extends BasicActivity {
                     MyStartActivity(WritePostActivity.class);
                     break;
             }
+        }
+    };
+
+    OnPostListener onPostListener = new OnPostListener() {
+        @Override
+        public void onModify() {
+            Log.e("log","modify success");
+        }
+
+        @Override
+        public void onDelete() {
+            PostUpdate();
+            Log.e("log","delete success");
         }
     };
 
@@ -183,26 +151,6 @@ public class MainActivity extends BasicActivity {
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
-                        }
-                    });
-        }
-    }
-
-    private void storeUploader(String id) {
-        if (successCount == 0) {
-            firebaseFirestore.collection("posts").document(id)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            showToast(MainActivity.this,"게시글 삭제 완료!");
-                            PostUpdate();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            showToast(MainActivity.this,"게시글 삭제 실패!");
                         }
                     });
         }

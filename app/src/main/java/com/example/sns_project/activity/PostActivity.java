@@ -1,64 +1,105 @@
+/*
+    2020.04.27
+ */
 package com.example.sns_project.activity;
 
-import android.graphics.Color;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ViewGroup;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.sns_project.FirebaseHelper;
 import com.example.sns_project.PostInfo;
 import com.example.sns_project.R;
+import com.example.sns_project.listener.OnPostListener;
+import com.example.sns_project.view.ContentsItemView;
+import com.example.sns_project.view.ReadContentsView;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-
-import static com.example.sns_project.Util.isStorageUrl;
+import static com.example.sns_project.Util.INTENT_PATH;
 
 public class PostActivity extends BasicActivity {
+
+    private PostInfo postInfo;
+    private FirebaseHelper firebaseHelper;
+    private ReadContentsView readContentsView;
+    private LinearLayout contentsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        PostInfo postInfo = (PostInfo)getIntent().getSerializableExtra("postInfo");
-        TextView titleTextView = findViewById(R.id.titleTextView);
-        titleTextView.setText(postInfo.getTitle());
+        postInfo = (PostInfo)getIntent().getSerializableExtra("postInfo");
+        setToolbarTitle(postInfo.getTitle());
 
-        TextView createdTextView = findViewById(R.id.createAtTextView);
-        createdTextView.setText(new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(postInfo.getCreatedAt()));
+        contentsLayout = findViewById(R.id.contentsLayout);
+        readContentsView = findViewById(R.id.readContentsView);
 
-        LinearLayout contentsLayout = findViewById(R.id.contentsLayout);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams
-                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        ArrayList<String> contentsList = postInfo.getContents();
+        firebaseHelper = new FirebaseHelper(this);
+        firebaseHelper.setOnPostListener(onPostListener);
+        uiUpdate();
+    }
 
-        if(contentsLayout.getTag() == null || !contentsLayout.equals(contentsList)) {
-            contentsLayout.setTag(contentsList);
-            contentsLayout.removeAllViews();
-
-            // 실행시 이미지 3개이상 올려도 보이는건 2개로 제한.
-            for(int i = 0 ; i< contentsList.size(); i++) {
-                String contents = contentsList.get(i);
-                if (isStorageUrl(contents)) {
-                    ImageView imageView = new ImageView(this);
-                    imageView.setLayoutParams(layoutParams);
-                    imageView.setAdjustViewBounds(true);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    contentsLayout.addView(imageView);
-                    Glide.with(this).load(contents).override(1000).thumbnail(0.1f).into(imageView);
-                } else {
-                    TextView textView = new TextView(this);
-                    textView.setLayoutParams(layoutParams);
-                    textView.setText(contents);
-                    textView.setTextColor(Color.rgb(0,0,0));
-                    contentsLayout.addView(textView);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 0:
+                if (resultCode == Activity.RESULT_OK) {
+                    postInfo = (PostInfo)data.getSerializableExtra("postInfo");
+                    contentsLayout.removeAllViews();
+                    uiUpdate();
                 }
-            }
+                break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.post, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.modify :
+                MyStartActivity(WritePostActivity.class, postInfo);
+                return true;
+            case R.id.delete :
+                firebaseHelper.storageDelete(postInfo);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    OnPostListener onPostListener = new OnPostListener() {
+        @Override
+        public void onModify() {
+            Log.e("로그", "수정 성공");
+        }
+
+        @Override
+        public void onDelete() {
+            Log.e("로그", "삭제 성공");
+        }
+    };
+
+    private void uiUpdate() {
+        setToolbarTitle(postInfo.getTitle());
+        readContentsView.setPostInfo(postInfo);
+    }
+
+    private void MyStartActivity(Class c, PostInfo postInfo) {
+        Intent intent = new Intent(this, c);
+        intent.putExtra("postInfo", postInfo);
+        startActivityForResult(intent, 0);
     }
 }

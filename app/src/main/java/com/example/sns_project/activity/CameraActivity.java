@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static com.example.sns_project.Util.INTENT_PATH;
+
 public class CameraActivity extends BasicActivity {
 
     private Camera2BasicFragment camera2BasicFragment; // 전역으로 변경해준다.
@@ -30,9 +32,6 @@ public class CameraActivity extends BasicActivity {
 
         @Override
         public void onImageAvailable(ImageReader reader) {
-        //    mBackgroundHandler.post(new Camera2BasicFragment.ImageUpLoader(reader.acquireNextImage()));
-            Log.e("로그", "캡쳐");
-
             Image mImage = reader.acquireNextImage();
             File mFile = new File(getExternalFilesDir(null), "profileImage.jpg");
 
@@ -56,9 +55,9 @@ public class CameraActivity extends BasicActivity {
                 }
             }
 
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("profilePath", mFile.toString());
-            setResult(Activity.RESULT_OK, resultIntent);
+            Intent intent = new Intent();
+            intent.putExtra(INTENT_PATH, mFile.toString());
+            setResult(Activity.RESULT_OK, intent);
 
             camera2BasicFragment.closeCamera();
             finish();
@@ -69,6 +68,7 @@ public class CameraActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        setToolbarTitle(getResources().getString(R.string.app_name));
         if (null == savedInstanceState) {
             camera2BasicFragment = new Camera2BasicFragment();
             camera2BasicFragment.setOnImageAvailableListener(mOnImageAvailableListener);

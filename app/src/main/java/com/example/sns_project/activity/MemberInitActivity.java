@@ -38,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import static com.example.sns_project.Util.INTENT_PATH;
 import static com.example.sns_project.Util.showToast;
 
 public class MemberInitActivity extends BasicActivity {
@@ -52,6 +53,7 @@ public class MemberInitActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_member_init);
+        setToolbarTitle("회원정보");
 
         loaderlayout = findViewById(R.id.loaderLayout);
         profileImageView = findViewById(R.id.profileimageView);
@@ -75,7 +77,7 @@ public class MemberInitActivity extends BasicActivity {
         switch (requestCode) {
             case 0 : {
                 if(resultCode == Activity.RESULT_OK) {
-                    profilePath = data.getStringExtra("profilePath");
+                    profilePath = data.getStringExtra(INTENT_PATH);
                     Log.e("로그", "profilePath :" + profilePath);
                     Glide.with(this).load(profilePath).centerCrop().override(500).into(profileImageView);
                 }
