@@ -38,6 +38,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import static com.example.sns_project.Util.showToast;
+
 public class MemberInitActivity extends BasicActivity {
 
     private static final String TAG = "MemberInitActivity";
@@ -147,7 +149,7 @@ public class MemberInitActivity extends BasicActivity {
                                 MemberInfo memberInfo = new MemberInfo(name, phoneNumber, birthDay, address, downloadUri.toString());
                                 storeUploader(memberInfo);
                             } else {
-                                StartToast("회원정보를 보내는데 실패했습니다.");
+                                showToast(MemberInitActivity.this,"회원정보를 보내는데 실패했습니다.");
                             }
                         }
                     });
@@ -157,7 +159,7 @@ public class MemberInitActivity extends BasicActivity {
             }
 
         } else {
-            StartToast("회원 정보를 입력해 주세요.");
+            showToast(MemberInitActivity.this,"회원 정보를 입력해 주세요.");
         }
     }
 
@@ -167,7 +169,7 @@ public class MemberInitActivity extends BasicActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            StartToast("회원정보 등록을 성공하였습니다.");
+                            showToast(MemberInitActivity.this,"회원정보 등록을 성공하였습니다.");
                             loaderlayout.setVisibility(View.GONE);
                             finish();
                         }
@@ -175,16 +177,11 @@ public class MemberInitActivity extends BasicActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            StartToast("회원정보 등록을 실패하였습니다.");
+                            showToast(MemberInitActivity.this,"회원정보 등록을 실패하였습니다.");
                             loaderlayout.setVisibility(View.GONE);
                         }
                     });
         }
-
-
-    private void StartToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
 
     private void MyStartActivity(Class c) {
         Intent intent = new Intent(this, c);

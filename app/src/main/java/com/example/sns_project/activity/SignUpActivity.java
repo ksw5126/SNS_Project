@@ -17,6 +17,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import static com.example.sns_project.Util.showToast;
+
 public class SignUpActivity extends BasicActivity {
 
     private FirebaseAuth mAuth; // 인스턴스
@@ -46,7 +48,6 @@ public class SignUpActivity extends BasicActivity {
             switch (v.getId()) {
                 case R.id.SignUpButton:
                     signUp();
-//                    Log.e("클릭", "클릭");
                     break;
                 case R.id.gotoLoginButton :
                     MyStartActivity(LoginActivity.class);
@@ -55,7 +56,6 @@ public class SignUpActivity extends BasicActivity {
     };
 
     private void signUp() {
-
         String email = ((EditText)findViewById(R.id.emailEditText)).getText().toString();
         String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString();
         String passwordCheck = ((EditText)findViewById(R.id.passwordcheckEditText)).getText().toString();
@@ -71,28 +71,22 @@ public class SignUpActivity extends BasicActivity {
                                 loaderLayout.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    StartToast("회원가입을 성공 했습니다.");
+                                    showToast(SignUpActivity.this,"회원가입을 성공 했습니다.");
                                     MyStartActivity(MainActivity.class);
                                 } else {
                                     if(task.getException() != null) {
-                                        StartToast(task.getException().toString());
+                                        showToast(SignUpActivity.this,task.getException().toString());
                                     }
                                 }
                             }
                         });
             } else {
-                StartToast("비밀번호가 일치하지 않습니다.");
+                showToast(SignUpActivity.this,"비밀번호가 일치하지 않습니다.");
             }
         }
         else {
-            StartToast("이메일 또는 비밀번호를 입력해주세요.");
+            showToast(SignUpActivity.this,"이메일 또는 비밀번호를 입력해주세요.");
         }
-
-
-    }
-
-    private void StartToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private void MyStartActivity(Class c) {
@@ -100,6 +94,4 @@ public class SignUpActivity extends BasicActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
-
 }

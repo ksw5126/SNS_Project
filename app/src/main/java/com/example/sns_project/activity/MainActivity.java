@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 
 import com.example.sns_project.PostInfo;
@@ -34,6 +33,10 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.example.sns_project.Util.isStorageUrl;
+import static com.example.sns_project.Util.showToast;
+import static com.example.sns_project.Util.storageUrlToName;
+
 public class MainActivity extends BasicActivity {
 
     private static final String TAG = "MainActivity";
@@ -42,9 +45,9 @@ public class MainActivity extends BasicActivity {
     private RecyclerView recyclerView;
     private MainAdapter mainAdapter;
     private ArrayList<PostInfo> postList;
-    private Util util;
     private StorageReference storageRef;
     private int successCount;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +83,6 @@ public class MainActivity extends BasicActivity {
             });
         }
 
-        util = new Util(this);
         postList = new ArrayList<>();
         mainAdapter = new MainAdapter(MainActivity.this, postList);
         mainAdapter.setOnPostListener(onPostListener);
@@ -108,14 +110,11 @@ public class MainActivity extends BasicActivity {
             // 실행시 이미지 3개이상 올려도 보이는건 2개로 제한.
             for(int i = 0 ; i< contentsList.size(); i++) {
                 String contents = contentsList.get(i);
-                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/sns-project-4dab8.appspot.com/o/post")) {
+                if (isStorageUrl(contents)) {
                     successCount++;
-                    String[] list = contents.split("\\?");
-                    String[] list2 = list[0].split("%2F");
-                    String name = list2[list2.length -1];
 
                     // Create a reference to the file to delete
-                    StorageReference desertRef = storageRef.child("posts/" + id + "/" + name);
+                    StorageReference desertRef = storageRef.child("posts/" + id + "/" + storageUrlToName(contents));
 
                     // Delete the file
                     desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -127,7 +126,7 @@ public class MainActivity extends BasicActivity {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
-                            util.showToast("문제가 발생했습니다!");
+                            showToast(MainActivity.this,"문제가 발생했습니다!");
                         }
                     });
                 }
@@ -196,14 +195,14 @@ public class MainActivity extends BasicActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            util.showToast("게시글 삭제 완료!");
+                            showToast(MainActivity.this,"게시글 삭제 완료!");
                             PostUpdate();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            util.showToast("게시글 삭제 실패!");
+                            showToast(MainActivity.this,"게시글 삭제 실패!");
                         }
                     });
         }

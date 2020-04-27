@@ -1,6 +1,7 @@
 package com.example.sns_project.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.util.Patterns;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.sns_project.PostInfo;
 import com.example.sns_project.R;
+import com.example.sns_project.activity.PostActivity;
 import com.example.sns_project.listener.OnPostListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static com.example.sns_project.Util.isStorageUrl;
+
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
     private ArrayList<PostInfo> mDataset;
     private Activity activity;
@@ -38,12 +42,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
 
     static class MainViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-         CardView cardView;
-
+        CardView cardView;
         MainViewHolder(CardView v) {
             super(v);
             cardView = v;
-
         }
     }
 
@@ -55,7 +57,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
 
     public void setOnPostListener(OnPostListener onPostListener) {
         this.onPostListener = onPostListener;
-
     }
 
     @Override
@@ -64,6 +65,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     }
 
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
     public MainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
@@ -74,13 +76,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent resultIntent = new Intent();
-//                resultIntent.putExtra("profilePath", mDataset.get(galleryViewHolder.getAdapterPosition()));
-//                activity.setResult(Activity.RESULT_OK, resultIntent);
-//                activity.finish();
+                Intent intent = new Intent(activity, PostActivity.class);
+                intent.putExtra("postInfo", mDataset.get(mainViewHolder.getAdapterPosition()));
+                activity.startActivity(intent);
             }
         });
-
 
         cardView.findViewById(R.id.menu).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +108,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         ArrayList<String> contentsList = mDataset.get(position).getContents();
 
     if(contentsLayout.getTag() == null || !contentsLayout.equals(contentsList)) {
-        Log.e("로그", "스가");
         contentsLayout.setTag(contentsList);
         contentsLayout.removeAllViews();
 
@@ -123,7 +122,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                 break;
             }
             String contents = contentsList.get(i);
-            if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/sns-project-4dab8.appspot.com/o/posts")) {
+            if (isStorageUrl(contents)) {
                 ImageView imageView = new ImageView(activity);
                 imageView.setLayoutParams(layoutParams);
                 imageView.setAdjustViewBounds(true);
@@ -148,8 +147,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
 
     public void showPopup(View v, final int position) {
         PopupMenu popup = new PopupMenu(activity, v);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.post, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -164,6 +161,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
                 return false;
             }
         });
+
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.post, popup.getMenu());
         popup.show();
     }
 
