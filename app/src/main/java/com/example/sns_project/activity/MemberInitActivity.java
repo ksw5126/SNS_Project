@@ -1,9 +1,7 @@
 package com.example.sns_project.activity;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.sns_project.MemberInfo;
@@ -47,7 +41,8 @@ public class MemberInitActivity extends BasicActivity {
     private ImageView profileImageView;
     private String profilePath;
     private FirebaseUser user;
-    private RelativeLayout loaderlayout;
+    private RelativeLayout loaderLayout;
+    private RelativeLayout buttonBackgroundLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +50,15 @@ public class MemberInitActivity extends BasicActivity {
         setContentView(R.layout.activity_member_init);
         setToolbarTitle("회원정보");
 
-        loaderlayout = findViewById(R.id.loaderLayout);
+        loaderLayout = findViewById(R.id.loaderLayout);
         profileImageView = findViewById(R.id.profileimageView);
         profileImageView.setOnClickListener(onClickListener);
+        buttonBackgroundLayout = findViewById(R.id.buttonsBackgroundLayout);
 
         findViewById(R.id.checkButton).setOnClickListener(onClickListener);
-        findViewById(R.id.videoModify).setOnClickListener(onClickListener);
-        findViewById(R.id.delete).setOnClickListener(onClickListener);
+        findViewById(R.id.picture).setOnClickListener(onClickListener);
+        findViewById(R.id.gallery).setOnClickListener(onClickListener);
+        findViewById(R.id.buttonsBackgroundLayout).setOnClickListener(onClickListener);
 
     }
 
@@ -78,8 +75,8 @@ public class MemberInitActivity extends BasicActivity {
             case 0 : {
                 if(resultCode == Activity.RESULT_OK) {
                     profilePath = data.getStringExtra(INTENT_PATH);
-                    Log.e("로그", "profilePath :" + profilePath);
                     Glide.with(this).load(profilePath).centerCrop().override(500).into(profileImageView);
+                    buttonBackgroundLayout.setVisibility(View.GONE);
                 }
                 break;
             }
@@ -94,14 +91,12 @@ public class MemberInitActivity extends BasicActivity {
                     storageUploader();
                     break;
                 case R.id.profileimageView :
-                    CardView cardView = findViewById(R.id.buttonsCardView);
-                    if(cardView.getVisibility() == View.VISIBLE) {
-                        cardView.setVisibility(View.GONE);
-                    } else {
-                        cardView.setVisibility(View.VISIBLE);
-                    }
+                    buttonBackgroundLayout.setVisibility(View.VISIBLE);
                     break;
-                case R.id.videoModify:
+                case R.id.buttonsBackgroundLayout :
+                    buttonBackgroundLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.picture:
                     MyStartActivity(CameraActivity.class);
                     break;
                 case R.id.gallery:
@@ -120,7 +115,7 @@ public class MemberInitActivity extends BasicActivity {
 
         if (name.length() > 0 && phoneNumber.length() > 9 && birthDay.length() > 5 && address.length() > 0) {
 
-            loaderlayout.setVisibility(View.VISIBLE);
+            loaderLayout.setVisibility(View.VISIBLE);
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
@@ -172,7 +167,7 @@ public class MemberInitActivity extends BasicActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             showToast(MemberInitActivity.this,"회원정보 등록을 성공하였습니다.");
-                            loaderlayout.setVisibility(View.GONE);
+                            loaderLayout.setVisibility(View.GONE);
                             finish();
                         }
                     })
@@ -180,7 +175,7 @@ public class MemberInitActivity extends BasicActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             showToast(MemberInitActivity.this,"회원정보 등록을 실패하였습니다.");
-                            loaderlayout.setVisibility(View.GONE);
+                            loaderLayout.setVisibility(View.GONE);
                         }
                     });
         }

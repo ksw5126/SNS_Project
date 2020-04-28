@@ -28,10 +28,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.example.sns_project.Util.isStorageUrl;
-import static com.example.sns_project.Util.showToast;
-import static com.example.sns_project.Util.storageUrlToName;
-
 public class MainActivity extends BasicActivity {
 
     private static final String TAG = "MainActivity";
@@ -77,8 +73,6 @@ public class MainActivity extends BasicActivity {
         postList = new ArrayList<>();
         mainAdapter = new MainAdapter(MainActivity.this, postList);
         mainAdapter.setOnPostListener(onPostListener);
-
-
 //        findViewById(R.id.logoutButton).setOnClickListener(onClickListener);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         findViewById(R.id.floatingAddButton).setOnClickListener(onClickListener);
@@ -86,6 +80,7 @@ public class MainActivity extends BasicActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         recyclerView.setAdapter(mainAdapter);
+//        FirebaseAuth.getInstance().signOut();
     }
 
     @Override
@@ -125,11 +120,9 @@ public class MainActivity extends BasicActivity {
 
     // 삭제나 수정시 바로바로 업데이트 !
     private void PostUpdate() {
-
         if(firebaseUser != null) {
 //            firebaseFirestore = FirebaseFirestore.getInstance();
             CollectionReference collectionReference = firebaseFirestore.collection("posts");
-
             collectionReference
                     .orderBy("createdAt", Query.Direction.DESCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -142,6 +135,7 @@ public class MainActivity extends BasicActivity {
                                     postList.add(new PostInfo(
                                             document.getData().get("title").toString(),
                                             (ArrayList<String>)document.getData().get("contents"),
+                                            (ArrayList<String>)document.getData().get("formats"),
                                             document.getData().get("publisher").toString(),
                                             new Date(document.getDate("createdAt").getTime()),
                                             document.getId()

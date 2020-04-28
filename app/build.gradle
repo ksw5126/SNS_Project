@@ -21,6 +21,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 }
 
@@ -43,4 +46,5 @@ dependencies {
     }
     implementation "com.android.support:support-fragment:29.1.0"
     implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.exoplayer:exoplayer:2.11.4'
 }
