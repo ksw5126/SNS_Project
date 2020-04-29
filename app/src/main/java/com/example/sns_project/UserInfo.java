@@ -1,6 +1,6 @@
 package com.example.sns_project;
 
-public class MemberInfo {
+public class UserInfo {
 
     private String name;
     private String phoneNumber;
@@ -8,7 +8,7 @@ public class MemberInfo {
     private String address;
     private String photoUrl;
 
-    public MemberInfo(String name, String phoneNumber, String birthDay, String address, String photoUrl) {
+    public UserInfo(String name, String phoneNumber, String birthDay, String address, String photoUrl) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDay = birthDay;
@@ -16,7 +16,7 @@ public class MemberInfo {
         this.photoUrl = photoUrl;
     }
 
-    public MemberInfo(String name, String phoneNumber, String birthDay, String address) {
+    public UserInfo(String name, String phoneNumber, String birthDay, String address) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDay = birthDay;

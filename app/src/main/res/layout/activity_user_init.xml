@@ -22,7 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/titleTextView"
@@ -30,16 +31,15 @@
                 android:layout_height="100dp"
                 android:gravity="center"
                 android:text="회원정보"
-                android:textColor="#FF000000"
+                android:textColor="#000000"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-
-                >
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="200dp"
@@ -56,7 +56,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <EditText
-                    android:id="@+id/nameEdittext"
+                    android:id="@+id/nameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -64,7 +64,7 @@
                     android:inputType="textPersonName" />
 
                 <EditText
-                    android:id="@+id/PhoneEditText"
+                    android:id="@+id/phoneNumberEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -72,7 +72,7 @@
                     android:inputType="phone" />
 
                 <EditText
-                    android:id="@+id/DateEditText"
+                    android:id="@+id/birthDayEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -80,7 +80,7 @@
                     android:inputType="date" />
 
                 <EditText
-                    android:id="@+id/AddressEditText"
+                    android:id="@+id/addressEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -109,15 +109,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:elevation="10dp"
-            app:cardBackgroundColor="#FFFFFF"
             app:cardCornerRadius="15dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="10dp"
-                android:visibility="visible">
+                android:padding="5dp"
+                >
 
                 <Button
                     android:id="@+id/picture"

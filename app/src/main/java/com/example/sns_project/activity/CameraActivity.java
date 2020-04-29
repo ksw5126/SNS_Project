@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
-import android.util.Log;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sns_project.R;
-import com.example.sns_project.fragement.Camera2BasicFragment;
+import com.example.sns_project.fragment.Camera2BasicFragment;
 
 import java.io.File;
 import java.io.FileOutputStream;

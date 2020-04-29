@@ -33,6 +33,7 @@ public class LoginActivity extends BasicActivity {
 
         findViewById(R.id.checkButton).setOnClickListener(onClickListener);
         findViewById(R.id.gotoPasswordResetButton).setOnClickListener(onClickListener);
+        findViewById(R.id.joinButton).setOnClickListener(onClickListener);
 
     }
 
@@ -40,6 +41,9 @@ public class LoginActivity extends BasicActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.joinButton :
+                    MyStartActivity(SignUpActivity.class);
+                    break;
                 case R.id.checkButton:
                     login();
                     break;

@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
-import com.example.sns_project.MemberInfo;
+import com.example.sns_project.UserInfo;
 import com.example.sns_project.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,7 +47,7 @@ public class MemberInitActivity extends BasicActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_member_init);
+        setContentView(R.layout.activity_user_init);
         setToolbarTitle("회원정보");
 
         loaderLayout = findViewById(R.id.loaderLayout);
@@ -108,10 +108,10 @@ public class MemberInitActivity extends BasicActivity {
 
     private void storageUploader() {
 
-        final String name = ((EditText) findViewById(R.id.nameEdittext)).getText().toString();
-        final String phoneNumber = ((EditText) findViewById(R.id.PhoneEditText)).getText().toString();
-        final String birthDay = ((EditText) findViewById(R.id.DateEditText)).getText().toString();
-        final String address = ((EditText) findViewById(R.id.AddressEditText)).getText().toString();
+        final String name = ((EditText) findViewById(R.id.nameEditText)).getText().toString();
+        final String phoneNumber = ((EditText) findViewById(R.id.phoneNumberEditText)).getText().toString();
+        final String birthDay = ((EditText) findViewById(R.id.birthDayEditText)).getText().toString();
+        final String address = ((EditText) findViewById(R.id.addressEditText)).getText().toString();
 
         if (name.length() > 0 && phoneNumber.length() > 9 && birthDay.length() > 5 && address.length() > 0) {
 
@@ -124,8 +124,8 @@ public class MemberInitActivity extends BasicActivity {
             final StorageReference mountainImagesRef = storageRef.child("users/" + user.getUid() + "/profileImage.jpg");
 
             if(profilePath == null) {
-                MemberInfo memberInfo = new MemberInfo(name, phoneNumber, birthDay, address);
-                storeUploader(memberInfo);
+                UserInfo userInfo = new UserInfo(name, phoneNumber, birthDay, address);
+                storeUploader(userInfo);
             } else {
                 try {
                     InputStream stream = new FileInputStream(new File(profilePath));
@@ -143,8 +143,8 @@ public class MemberInitActivity extends BasicActivity {
                         public void onComplete(@NonNull Task<Uri> task) {
                             if (task.isSuccessful()) {
                                 Uri downloadUri = task.getResult();
-                                MemberInfo memberInfo = new MemberInfo(name, phoneNumber, birthDay, address, downloadUri.toString());
-                                storeUploader(memberInfo);
+                                UserInfo userInfo = new UserInfo(name, phoneNumber, birthDay, address, downloadUri.toString());
+                                storeUploader(userInfo);
                             } else {
                                 showToast(MemberInitActivity.this,"회원정보를 보내는데 실패했습니다.");
                             }
@@ -160,9 +160,9 @@ public class MemberInitActivity extends BasicActivity {
         }
     }
 
-    private void storeUploader(MemberInfo memberInfo) {
+    private void storeUploader(UserInfo userInfo) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users").document(user.getUid()).set(memberInfo)
+            db.collection("users").document(user.getUid()).set(userInfo)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {

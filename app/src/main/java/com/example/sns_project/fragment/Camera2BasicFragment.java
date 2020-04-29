@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.sns_project.fragement;
+package com.example.sns_project.fragment;
 
 import android.Manifest;
 import android.app.Activity;
