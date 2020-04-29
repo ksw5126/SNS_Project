@@ -39,8 +39,8 @@ public class ReadContentsView extends LinearLayout {
 
     private Context context;
     private LayoutInflater layoutInflater;
-    private SimpleExoPlayer player;
     private int moreIndex = -1;
+    private ArrayList<SimpleExoPlayer> playerArrayList = new ArrayList<>();
 
     public ReadContentsView(Context context) {
         super(context);
@@ -62,7 +62,6 @@ public class ReadContentsView extends LinearLayout {
 
         layoutInflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.view_post, this, true);
-        player = ExoPlayerFactory.newSimpleInstance(context);
 
     }
 
@@ -103,6 +102,7 @@ public class ReadContentsView extends LinearLayout {
                 MediaSource videoSource =
                         new ProgressiveMediaSource.Factory(dataSourceFactory)
                                 .createMediaSource(Uri.parse(contents));
+                SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(context);
                 player.prepare(videoSource);
                 player.addVideoListener(new VideoListener() {
                     @Override
@@ -110,16 +110,19 @@ public class ReadContentsView extends LinearLayout {
                         playerView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
                     }
                 });
+                playerArrayList.add(player);
                 playerView.setPlayer(player);
                 contentsLayout.addView(playerView);
-
             } else {
                 TextView textView = (TextView)layoutInflater.inflate(R.layout.view_contents_text, this, false);
                 textView.setText(contents);
                 contentsLayout.addView(textView);
             }
-
         }
+    }
+
+    public ArrayList<SimpleExoPlayer> getPlayerArrayList() {
+        return playerArrayList;
     }
 }
 

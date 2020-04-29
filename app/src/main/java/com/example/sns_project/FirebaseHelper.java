@@ -8,7 +8,6 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
-import com.example.sns_project.activity.MainActivity;
 import com.example.sns_project.listener.OnPostListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,7 +35,7 @@ public class FirebaseHelper {
         this.onPostListener = onPostListener;
     }
 
-    public void storageDelete(PostInfo postInfo) {
+    public void storageDelete(final PostInfo postInfo) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
@@ -56,7 +55,7 @@ public class FirebaseHelper {
                     @Override
                     public void onSuccess(Void aVoid) {
                         successCount--;
-                        storeDelete(id);
+                        storeDelete(id, postInfo);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -66,10 +65,10 @@ public class FirebaseHelper {
                 });
             }
         }
-        storeDelete(id);
+        storeDelete(id, postInfo);
     }
 
-    private void storeDelete(String id) {
+    private void storeDelete(final String id, final PostInfo postInfo) {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         if (successCount == 0) {
             firebaseFirestore.collection("posts").document(id)
@@ -78,7 +77,7 @@ public class FirebaseHelper {
                         @Override
                         public void onSuccess(Void aVoid) {
                             showToast(activity,"게시글 삭제 완료!");
-                            onPostListener.onDelete();
+                            onPostListener.onDelete(postInfo);
 //                            PostUpdate();
                         }
                     })

@@ -87,7 +87,7 @@ public class PostActivity extends BasicActivity {
         }
 
         @Override
-        public void onDelete() {
+        public void onDelete(PostInfo postInfo) {
             Log.e("로그", "삭제 성공");
         }
     };

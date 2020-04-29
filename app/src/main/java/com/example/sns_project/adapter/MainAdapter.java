@@ -23,6 +23,8 @@ import com.example.sns_project.activity.PostActivity;
 import com.example.sns_project.activity.WritePostActivity;
 import com.example.sns_project.listener.OnPostListener;
 import com.example.sns_project.view.ReadContentsView;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+
 import java.util.ArrayList;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
@@ -30,6 +32,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     private Activity activity;
     private final int MORE_INDEX = 2;
     private FirebaseHelper firebaseHelper;
+    private ArrayList<ArrayList<SimpleExoPlayer>> playerArrayListArrayList = new ArrayList<>();
 
     static class MainViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
@@ -104,6 +107,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         readContentsView.setMoreIndex(MORE_INDEX);
         readContentsView.setPostInfo(postInfo);
 
+        ArrayList<SimpleExoPlayer> playerArrayList = readContentsView.getPlayerArrayList();
+        if(playerArrayList != null) {
+            playerArrayListArrayList.add(playerArrayList);
+             }
         }
     }
 
@@ -113,7 +120,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     }
 
     public void showPopup(View v, final int position) {
-        PopupMenu popup = new PopupMenu(activity, v);
+        final PopupMenu popup = new PopupMenu(activity, v);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -140,4 +147,15 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         activity.startActivity(intent);
     }
 
+    public void playerStop() {
+        for(int i = 0; i < playerArrayListArrayList.size(); i++) {
+            ArrayList<SimpleExoPlayer> playerArrayList = playerArrayListArrayList.get(i);
+            for(int ii=0; ii<playerArrayList.size(); ii++) {
+                SimpleExoPlayer player = playerArrayList.get(ii);
+                if(player.getPlayWhenReady()) {
+                    player.setPlayWhenReady(false);
+                }
+            }
+        }
+    }
 }
